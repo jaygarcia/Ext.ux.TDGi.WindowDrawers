@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Window Drawer Basic Example</title>
+<link rel="stylesheet" type="text/css" href="/js/extjs/resources/css/ext-all.css" />
+<script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-8.js"></script>
+    <script language="javascript" src="Ext.ux.plugins.WindowDrawer.js"></script>
+
+
+	<script language="javascript">
+        /*
+            Author       : Jay Garcia
+            Site         : http://tdg-i.com
+            Contact Info : jgarcia@tdg-i.com
+            Purpose      : Window Drawers for Ext 2.x Ext.Window class, which emulates OS X behaviors
+            Warranty     : none
+            Price        : free
+            Date         : 08/31/08
+            
+        */
+            
+		Ext.onReady(function(){
+			var myData = [
+				['Ext JS LLC',395.73,1.5,0.45,'9/6 12:00am', 'Interesting to work for'],
+				['3m Co',71.72,0.02,0.03,'9/1 12:00am', 'Cool Company'],
+				['Alcoa Inc',29.01,0.42,1.47,'9/1 12:00am', 'What is this?'],
+				['Altria Group Inc',83.81,0.28,0.34,'9/1 12:00am', 'Great to work for'],
+				['American Express Company',52.55,0.01,0.02,'9/1 12:00am', 'This rocks'],
+				['American International Group, Inc.',64.13,0.31,0.49,'9/1 12:00am', 'Some comment'],
+				['AT&T Inc.',31.61,-0.48,-1.54,'9/1 12:00am', 'another comment'],
+				['Boeing Co.',75.43,0.53,0.71,'9/1 12:00am'],
+				['Caterpillar Inc.',67.27,0.92,1.39,'9/1 12:00am'],
+				['Citigroup, Inc.',49.37,0.02,0.04,'9/1 12:00am', 'blah blah'],
+				['E.I. du Pont de Nemours and Company',40.48,0.51,1.28,'9/1 12:00am', 'oaijsfiew'],
+				['Exxon Mobil Corp',68.1,-0.43,-0.64,'9/1 12:00am'],
+				['General Electric Company',34.14,-0.08,-0.23,'9/1 12:00am', 'Ge is old'],
+				['General Motors Corporation',30.27,1.09,3.74,'9/1 12:00am'],
+				['Hewlett-Packard Co.',36.53,-0.03,-0.08,'9/1 12:00am'],
+				['Honeywell Intl Inc',38.77,0.05,0.13,'9/1 12:00am', 'Honewell is a great company'],
+				['Intel Corporation',19.88,0.31,1.58,'9/1 12:00am'],
+				['International Business Machines',81.41,0.44,0.54,'9/1 12:00am'],
+				['Johnson & Johnson',64.72,0.06,0.09,'9/1 12:00am'],
+				['JP Morgan & Chase & Co',45.73,0.07,0.15,'9/1 12:00am', 'Interesting to work for'],
+				['McDonald\'s Corporation',36.76,0.86,2.40,'9/1 12:00am'],
+				['Merck & Co., Inc.',40.96,0.41,1.01,'9/1 12:00am'],
+				['Microsoft Corporation',25.84,0.14,0.54,'9/1 12:00am'],
+				['Pfizer Inc',27.96,0.4,1.45,'9/1 12:00am'],
+				['The Coca-Cola Company',45.07,0.26,0.58,'9/1 12:00am'],
+				['The Home Depot, Inc.',34.64,0.35,1.02,'9/1 12:00am'],
+				['The Procter & Gamble Company',61.91,0.01,0.02,'9/1 12:00am'],
+				['United Technologies Corporation',63.26,0.55,0.88,'9/1 12:00am'],
+				['Verizon Communications',35.57,0.39,1.11,'9/1 12:00am'],
+				['Wal-Mart Stores, Inc.',45.45,0.73,1.63,'9/1 12:00am']
+			];
+			var win;
+			// example of custom renderer function
+			function change(val){
+				if(val > 0){
+					return '<span style="color:green;">' + val + '</span>';
+				}else if(val < 0){
+					return '<span style="color:red;">' + val + '</span>';
+				}
+				return val;
+			}
+		
+			// example of custom renderer function
+			function pctChange(val){
+				if(val > 0){
+					return '<span style="color:green;">' + val + '%</span>';
+				}else if(val < 0){
+					return '<span style="color:red;">' + val + '%</span>';
+				}
+				return val;
+			}
+		
+			// create the data store
+			var firstGridStore = new Ext.data.SimpleStore({
+				fields: [
+				   {name: 'company'},
+				   {name: 'price', type: 'float'},
+				   {name: 'change', type: 'float'},
+				   {name: 'pctChange', type: 'float'},
+				   {name: 'lastChange'},
+				   {name: 'comment'}
+				],
+				autoLoad : true,
+				data     : myData
+			});
+
+			// create the Grid
+			var grid = new Ext.grid.GridPanel({
+				store          : firstGridStore,
+				enableDragDrop : true,
+				ddGroup        : 'secondGridDDGroup',
+				border         : false,
+				columns        : [
+					{id:'company',header: "Company", width: 160, sortable: true, dataIndex: 'company'},
+					{header: "Price", width: 75, sortable: true, renderer: 'usMoney', dataIndex: 'price'},
+					{header: "Change", width: 75, sortable: true, renderer: change, dataIndex: 'change'},
+					{header: "% Change", width: 75, sortable: true, renderer: pctChange, dataIndex: 'pctChange'},
+					{header: "Last Updated", width: 85, sortable: true, dataIndex: 'lastChange'}
+				],
+				stripeRows       : true,
+				autoExpandColumn : 'company'
+			});
+		
+			var secondGridStore = new Ext.data.SimpleStore({
+				fields   : ['name'],
+				root     : '',
+				autoLoad : false
+				
+			});
+			
+			// create the destination Grid
+			var secondGrid = new Ext.grid.GridPanel({
+				ddGroup          : 'firstGridDDGroup',
+				store            : secondGridStore,
+				columns          : [
+					{id:'company',header: "Company", width: 160, sortable: true, dataIndex: 'company'}
+				],
+				enableDragDrop   : true,
+				stripeRows       : true,
+				autoExpandColumn : 'company'
+			});
+		
+			var rightDrawer = new Ext.ux.plugins.WindowDrawer({
+				width     : 200,
+				resizable : true,
+				maxWidth  : 400,
+				side      : 'e', // Can be n e s w (North, East, South, West)
+				animate   : true,
+				closable	  : true,
+				plain     :  true,
+				border    : false,
+				title     : 'Companies to sell',
+				layout    : 'fit',
+				items     : secondGrid
+			});
+
+			grid.on('rowclick', function(grid, rowIndex, eventObj) {
+				var record = grid.getStore().getAt(rowIndex);
+				win.drawers.e.show();
+			});
+
+			win = new Ext.Window({
+				layout      : 'fit',
+				width       : 450,
+				height      : 265,
+				minHeight   : 265,
+				closeAction :'hide',
+				border      : false,
+				plain       : true,
+				closable    : false,
+				constrain   : true,
+				resizable   : true, // Required for now
+				title       : 'Grid to Grid Drag and Drop -- open the drawer',
+				buttonAlign : 'center',
+				items       : grid,
+				plugins : [
+					rightDrawer
+				],
+				bbar : [
+					{
+						text: 'Manage Companies to sell',
+						handler: function() {
+							win.drawers.e.show();
+						}
+					},
+					'->',
+					{
+						text: 'Save',
+						handler: function() {
+							win.drawers.e.hide();
+							//refresh source grid
+							firstGridStore.loadData(myData);
+							
+							//purge destination grid
+							secondGridStore.removeAll();
+							
+							win.el.mask('Saving', 'x-mask-loading');
+							win.el.unmask.defer(750, win.el);
+							
+						}
+					}
+				]
+			});		
+			win.show();	
+			
+			var firstGridDropTargetEl =  grid.getView().el.dom.childNodes[0].childNodes[1];
+			var firstGridDropTarget = new Ext.dd.DropTarget(firstGridDropTargetEl, {
+				ddGroup    : 'firstGridDDGroup',
+				copy       : true,
+				notifyDrop : function(ddSource, e, data){
+					
+					// Generic function to add records.
+					function addRow(record, index, allItems) {
+						
+						// Search for duplicates
+						var foundItem = firstGridStore.find('name', record.data.name);
+						// if not found
+						if (foundItem  == -1) {
+							firstGridStore.add(record);
+							
+							// Call a sort dynamically
+							firstGridStore.sort('name', 'ASC');
+							
+							//Remove Record from the source
+							ddSource.grid.store.remove(record);
+						}
+					}
+		
+					// Loop through the selections
+					Ext.each(ddSource.dragData.selections ,addRow);
+					return(true);
+				}
+			}); 	
+		
+			
+			// This will make sure we only drop to the view container
+			var secondGridDropTargetEl = secondGrid.getView().el.dom.childNodes[0].childNodes[1]
+			secondGridDropTargetEl = rightDrawer.body.dom;
+			var destGridDropTarget = new Ext.dd.DropTarget(secondGridDropTargetEl, {
+				ddGroup    : 'secondGridDDGroup',
+				copy       : false,
+				notifyDrop : function(ddSource, e, data){
+					
+					// Generic function to add records.
+					function addRow(record, index, allItems) {
+						
+						// Search for duplicates
+						var foundItem = secondGridStore.find('name', record.data.name);
+						// if not found
+						if (foundItem  == -1) {
+							secondGridStore.add(record);
+							// Call a sort dynamically
+							secondGridStore.sort('name', 'ASC');
+					
+							//Remove Record from the source
+							ddSource.grid.store.remove(record);
+						}
+					}
+					// Loop through the selections
+					Ext.each(ddSource.dragData.selections ,addRow);
+					return(true);
+				}
+			}); 			
+		
+		});   
+
+    </script>
+
+
+</head>
+<body>
+</body>
+</html>
